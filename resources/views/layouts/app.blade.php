@@ -6,7 +6,7 @@
 
     <title>@yield('title', env('APP_NAME'))</title>
 
-    @vite(['resources/css/app.css', 'resources/sass/main.sass', 'resources/js/main.js'])
+    @vite(['resources/css/app.css', 'resources/sass/main.sass', 'resources/js/app.js'])
 </head>
 <body class="antialiased">
 

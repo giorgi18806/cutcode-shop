@@ -20,9 +20,6 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         Model::shouldBeStrict(!app()->isProduction()); // contains both preventLazyLoading() and preventsSilentlyDiscardingAttributes() methods
@@ -30,11 +27,11 @@ class AppServiceProvider extends ServiceProvider
 //        Model::preventsSilentlyDiscardingAttributes(!app()->isProduction());
 
         if(app()->isProduction()) {
-            DB::whenQueryingForLongerThan(CarbonInterval::seconds(5), function (Connection $connection, QueryExecuted $event) {
-                logger()
-                    ->channel('telegram')
-                    ->debug('whenQueryingForLongerThan: ' . $connection->query()->toSql());
-            });
+//            DB::whenQueryingForLongerThan(CarbonInterval::seconds(5), function (Connection $connection, QueryExecuted $event) {
+//                logger()
+//                    ->channel('telegram')
+//                    ->debug('whenQueryingForLongerThan: ' . $connection->query()->toSql());
+//            });
 
             DB::listen(function ($query) {
                 // $query->sql;
@@ -44,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
                 if ($query->time > 100) {
                     logger()
                         ->channel('telegram')
-                        ->debug('whenQueryingForLongerThan: ' . $query->sql, $query->bindings);
+                        ->debug('Query Longer Than 1ms: ' . $query->sql, $query->bindings);
                 }
 
                 dump($query->sql);
