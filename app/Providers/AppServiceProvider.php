@@ -17,7 +17,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            'Domain\Auth\Contracts\RegisterNewUserContract',
+            'Domain\Auth\Actions\RegisterNewUserAction'
+        );
     }
 
     public function boot(): void

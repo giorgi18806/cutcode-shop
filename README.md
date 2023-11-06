@@ -6,4 +6,5 @@
     to AppServiceProvier.php
     - composer require barryvdh/laravel-debugbar --dev
     - composer require laravel/telescope then php artisan telescope:install
-    - php artisan migrate
+    - php artisan shop:install
+    - make .env and .env.testing from .env.example !!!IMPORTANT!!!

@@ -10,25 +10,53 @@ trait HasSlug
     protected static function bootHasSlug(): void
     {
         static::creating(function (Model $item) {
-//            $item->slug = $item->slug
-//                ?? str($item->{self::slugFrom()})
-//                    ->append(time())
-//                    ->slug();
-            $title = str($item->{self::slugFrom()});
-            $item->slug = self::makeSlug($title);
+            $item->makeSlug();
         });
     }
 
-    public static function slugFrom(): string
+    protected function makeSlug(): void
+    {
+        if(!$this->{$this->slugColumn()}) {
+            $slug = $this->slugUnique(
+                str($this->{$this->slugFrom()})
+                    ->slug()
+                    ->value()
+            );
+
+            $this->{$this->slugColumn()} = $slug;
+        }
+    }
+
+    protected function slugColumn(): string
+    {
+        return 'slug';
+    }
+
+    protected function slugFrom():string
     {
         return 'title';
     }
 
-    protected static function makeSlug($value): string
+    private function slugUnique(string $slug): string
     {
-        $slug = Str::slug($value);
-        $count = static::whereRaw("slug RLIKE '^{$slug}(-[0-9]+)?$'")->count();
+        $originalSlug = $slug;
+        $i = 0;
 
-        return $count ? "{$slug}-{$count}" : $slug;
+        while($this->isSlugExists($slug)) {
+            $i++;
+            $slug = $originalSlug . '-' . $i;
+        }
+
+        return $slug;
+    }
+
+    private function isSlugExists(string $slug): bool
+    {
+        $query = $this->newQuery()
+            ->where(self::slugColumn(), $slug)
+            ->where($this->getKeyName(), '!=', $this->getKey())
+            ->withoutGlobalScopes();
+
+        return $query->exists();
     }
 }
